@@ -7,7 +7,7 @@ while True:
     elif stock.isdigit() == False:
         print("Error")
         rejected += 1
-    elif inventory > 500:
+    elif inventory + int(stock) > 500:
         break
     else:
         inventory += int(stock)
