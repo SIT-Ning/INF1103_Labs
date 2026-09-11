@@ -8,6 +8,7 @@ while True:
         print("Error")
         rejected += 1
     elif inventory + int(stock) > 500:
+        print("Units exceeded 500 units")
         break
     else:
         inventory += int(stock)
