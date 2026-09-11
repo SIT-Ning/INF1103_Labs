@@ -12,5 +12,5 @@ while True:
         break
     else:
         inventory += int(stock)
-print("Total Unit Processed:", inventory, "No. of rejected entries:", rejected)
+print("Total Unit Processed:", inventory,"|", "No. of rejected entries:", rejected)
     
