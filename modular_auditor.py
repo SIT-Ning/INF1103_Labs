@@ -5,7 +5,7 @@ def get_valid_input():
     elif stock.isdigit() == False:
         return "Invalid No."
     else:
-        return True
+        return stock
 def process_delivery(current_total, new_value):
     new_total = current_total + new_value
     return new_total
@@ -19,4 +19,12 @@ def generate_report(total_units, failed_attempts):
 inventory = 0
 rejected = 0
 
-get_valid_input()
+while True:
+    entry = get_valid_input()
+    if entry == "Quit":
+        break
+    elif entry == "Invalid No.":
+        print("Error")
+        rejected += 1
+    elif 
+    
