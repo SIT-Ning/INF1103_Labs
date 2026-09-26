@@ -1,40 +1,68 @@
 import os
-#Define a function load_inventory()
+
 def load_inventory():
     if os.path.exists("orders.txt"):
         with open("orders.txt", "r") as file:
-            read_file = file.read()
-            return read_file
-    else:
-        file = open("orders.txt","w")
-    return file
+            # Read all non-empty lines into a list
+            orders = [line.strip() for line in file if line.strip()]
+            return orders
+    return []
 
-#Define a function save_inventory()
 def save_inventory(new_entry):
-    for i in new_entry:
-        with open("orders.txt", "a") as inventory_update:
-            inventory_update.write(i, "\n")
+    # Append the new formatted order string to the file
+    with open("orders.txt", "a") as file:
+        file.write(new_entry + "\n")
+    print("Order successfully saved to orders.txt")
 
-#Define a function product_name()
-def product_name():
+def get_product_name():
     naming = input("Enter Product Name: ")
-    return product_name
+    return naming
 
-#Define a function get_quantity()
 def get_quantity():
-    stock = input('Enter quantity: ')
-    if stock == "quit":
+    stock = input("Enter Quantity: ")
+    if stock.lower() == "quit":
         return "Quit"
-    elif stock.isdigit() == False:
+    elif not stock.isdigit():
         return "Invalid No."
     else:
         return int(stock)
- 
-#Print the inventory
-current_inventory = load_inventory()
-if len(current_inventory) > 0:
-    print("Current Inventory:\n")
-    for i in current_inventory:
-        print(i)
-    print("\n")
 
+# --- Main Program Execution ---
+
+# 1. Load existing orders
+orders = load_inventory()
+
+# 2. Display current orders
+print("Current Orders:\n")
+if orders:
+    for order in orders:
+        print(order)
+    print()  # Blank line for spacing
+else:
+    print("No existing orders found.\n")
+
+# 3. Determine next Order ID (starts at 1001 if file is empty)
+next_id = 1001
+if orders:
+    last_order = orders[-1]
+    # Extract ID from the first field of the comma-separated string
+    last_id = int(last_order.split(',')[0])
+    next_id = last_id + 1
+
+# 4. Get input from user
+product = get_product_name()
+quantity = get_quantity()
+
+# 5. Process valid entry
+if quantity not in ["Quit", "Invalid No."]:
+    # Format order entry (e.g., "1004,Laptop Stand,2")
+    new_order_str = f"{next_id},{product},{quantity}"
+    
+    print("\nNew Order Added:")
+    print(new_order_str)
+    print()
+    
+    # Save entry to orders.txt
+    save_inventory(new_order_str)
+elif quantity == "Invalid No.":
+    print("Invalid quantity entered.")
