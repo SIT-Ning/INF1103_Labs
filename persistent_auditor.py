@@ -1,68 +1,73 @@
 import os
-
+#Define a function load_inventory()
 def load_inventory():
-    if os.path.exists("orders.txt"):
-        with open("orders.txt", "r") as file:
-            # Read all non-empty lines into a list
-            orders = [line.strip() for line in file if line.strip()]
-            return orders
-    return []
+    try:
+        with open("orders.txt","r") as file:
+            return [line.strip() for line in file.readlines()]
+    except FileNotFoundError:
+        return []
 
+#Define a function save_inventory()
 def save_inventory(new_entry):
-    # Append the new formatted order string to the file
-    with open("orders.txt", "a") as file:
-        file.write(new_entry + "\n")
-    print("Order successfully saved to orders.txt")
+    with open("orders.txt", "a") as inventory_update:
+            inventory_update.write(new_entry + "\n")
+    print("Orders successfully saved to orders.txt")
 
-def get_product_name():
+#Define a function product_name()
+def product_name():
     naming = input("Enter Product Name: ")
     return naming
 
+#Define a function get_quantity()
 def get_quantity():
-    stock = input("Enter Quantity: ")
-    if stock.lower() == "quit":
-        return "Quit"
-    elif not stock.isdigit():
-        return "Invalid No."
-    else:
-        return int(stock)
+    stock = input('Enter quantity: ')
+    return stock
+        
+def total_quantity():
+    total = 0
+    try:
+        with open("orders.txt","r") as file:
+            for line in file:
+                parts = line.strip().split(",")
+            if len(parts) >= 3:
+                qty = int(parts[2].strip())
+                total += qty
+    except FileNotFoundError:
+        return 0
+    return total
 
-# --- Main Program Execution ---
+def generate_report(total_units, failed_attempts):
+    print("Total Unit Processed:", total_units ,"|", "No. of rejected entries:", failed_attempts)
 
-# 1. Load existing orders
-orders = load_inventory()
+def main():
 
-# 2. Display current orders
-print("Current Orders:\n")
-if orders:
+    orders = load_inventory()
+    rejected = 0
+    print("Current Orders: \n")
     for order in orders:
         print(order)
-    print()  # Blank line for spacing
-else:
-    print("No existing orders found.\n")
-
-# 3. Determine next Order ID (starts at 1001 if file is empty)
-next_id = 1001
-if orders:
-    last_order = orders[-1]
-    # Extract ID from the first field of the comma-separated string
-    last_id = int(last_order.split(',')[0])
-    next_id = last_id + 1
-
-# 4. Get input from user
-product = get_product_name()
-quantity = get_quantity()
-
-# 5. Process valid entry
-if quantity not in ["Quit", "Invalid No."]:
-    # Format order entry (e.g., "1004,Laptop Stand,2")
-    new_order_str = f"{next_id},{product},{quantity}"
     
-    print("\nNew Order Added:")
-    print(new_order_str)
-    print()
-    
-    # Save entry to orders.txt
-    save_inventory(new_order_str)
-elif quantity == "Invalid No.":
-    print("Invalid quantity entered.")
+    while True:
+     product = product_name()
+     quantity = get_quantity()
+
+     if quantity.isdigit() == False:
+         print("Invalid no.")
+         rejected += 1
+
+     next_id = 1001 + len(orders)
+     new_orders = f"{next_id},{product},{quantity}"
+     print("New Order Added:\n", new_orders)
+     save_inventory(new_orders)
+
+     get_total = total_quantity()
+
+     user_input = input("\nPress Enter to add another order, or type 'quit' to exit: ")
+     if user_input.lower() == "quit":
+        print(generate_report(get_total, rejected))
+        break
+
+
+main()
+
+
