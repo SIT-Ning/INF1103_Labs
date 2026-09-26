@@ -15,58 +15,38 @@ def save_inventory(new_entry):
 
 #Define a function product_name()
 def product_name():
-    naming = input("Enter Product Name: ")
-    return naming
+    prd = input("Enter Product Name: ")
+    return prd
 
 #Define a function get_quantity()
 def get_quantity():
     stock = input('Enter quantity: ')
+    if stock.isdigit() == False:
+        print("Invalid no.")
     return stock
         
-def total_quantity():
-    total = 0
-    try:
-        with open("orders.txt","r") as file:
-            for line in file:
-                parts = line.strip().split(",")
-            if len(parts) >= 3:
-                qty = int(parts[2].strip())
-                total += qty
-    except FileNotFoundError:
-        return 0
-    return total
-
-def generate_report(total_units, failed_attempts):
-    print("Total Unit Processed:", total_units ,"|", "No. of rejected entries:", failed_attempts)
 
 def main():
-
     orders = load_inventory()
-    rejected = 0
+    next_id = 1001
     print("Current Orders: \n")
     for order in orders:
         print(order)
-    
     while True:
-     product = product_name()
-     quantity = get_quantity()
 
-     if quantity.isdigit() == False:
-         print("Invalid no.")
-         rejected += 1
+        product = product_name()
+        quantity = get_quantity()
 
-     next_id = 1001 + len(orders)
-     new_orders = f"{next_id},{product},{quantity}"
-     print("New Order Added:\n", new_orders)
-     save_inventory(new_orders)
+        new_orders = f"{next_id},{product},{quantity}"
+        print("New Order Added:\n", new_orders)
+        save_inventory(new_orders)
 
-     get_total = total_quantity()
-
-     user_input = input("\nPress Enter to add another order, or type 'quit' to exit: ")
-     if user_input.lower() == "quit":
-        print(generate_report(get_total, rejected))
-        break
-
+        user_choice = input("\nDo you want to quit: ")
+        if user_choice.lower() == "quit":
+            break
+        else:
+            next_id += 1
+            continue
 
 main()
 
