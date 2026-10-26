@@ -20,4 +20,25 @@ class Product:
             "price": self._price,
             "stock": self._stock
         }
+
+class Inventory:
+    def __init__(self):
+        self.products = []
+    
+    def add_products(self, product):
+        self.products.append(product)
+        
+    def search_products(self, product_id):
+        for product in self.products:
+            if product.product_id == product_id:
+                return product
+        return None
+    
+    def display_all(self):
+        if not self.products:
+            print('Inventory is empty')
+        for product in self.products:
+            product.display_information()
+
+
     
