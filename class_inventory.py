@@ -1,3 +1,4 @@
+import json
 class Product:
     def __init__(self, product_id, name, price, stock):
         self.product_id = product_id
@@ -39,6 +40,24 @@ class Inventory:
             print('Inventory is empty')
         for product in self.products:
             product.display_information()
+    
+    def save_to_json(self, filename = "inventory.json"):
+        data = [product.to_dict() for product in self.products]
+        with open(filename, "w") as file:
+            json.dump(data, file, indent=4)
+        print(f"Inventory saved successfully to {filename}")
+    
+    def load_from_json(self, filename = "inventory.json"):
+        try:
+            with open(filename, "r") as file:
+                data = json.load(file)
+                self.products = [
+                    Product(item["product_id"], item["name"], item["price"], item["stock"])
+                    for item in data
+                ]
+                print(f"Inventory is loaded successfully from {filename}")
+        except FileNotFoundError:
+            print(f"{filename} is not found. Starting with an empty inventory")
 
 # Example inside your main program loop
 inventory = Inventory()
@@ -53,4 +72,6 @@ inventory.add_products(product3)
 
 # When displaying products:
 inventory.display_all()
+inventory.save_to_json()
+inventory.load_from_json()
     
