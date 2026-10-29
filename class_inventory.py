@@ -40,5 +40,17 @@ class Inventory:
         for product in self.products:
             product.display_information()
 
+# Example inside your main program loop
+inventory = Inventory()
 
+# When adding a product from user input:
+product1 = Product("P001", "Laptop", 1200.00, 15)
+product2 = Product("P002", "Mouse", 25.50, 40)
+product3= Product("P004", "Monitor", 299.99, 10)
+inventory.add_products(product1)
+inventory.add_products(product2)
+inventory.add_products(product3)
+
+# When displaying products:
+inventory.display_all()
     
