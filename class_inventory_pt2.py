@@ -8,7 +8,7 @@ class CanBeShipped(ABC):
 
 class Product(ABC):
     def __init__(self, product_id, name, price, stock):
-        self.product_id = product_id
+        self._product_id = product_id
         self.name = name
         self._price = price
         self._stock = stock
@@ -23,7 +23,7 @@ class Product(ABC):
         pass
     
     def display_information(self):
-        print(f"ID : {self.product_id} | Name: {self.name} | Price: ${self._price:.2f} | Stock: {self._stock}")
+        print(f"ID : {self._product_id} | Name: {self.name} | Price: ${self._price:.2f} | Stock: {self._stock}")
         
     @abstractmethod    
     def to_dict(self):
@@ -70,20 +70,20 @@ class Inventory:
         except FileNotFoundError:
             print(f"{filename} is not found. Starting with an empty inventory")
 
-class PhysicalProduct:
+class PhysicalProduct(Product):
     def __init__(self, product_id, name, price, stock, weight):
         super().__init__(product_id, name, price, stock)
-        self.weight = weight
+        self._weight = weight
         
     def get_fulfilment_info(self):
-            return "Product requires physical shipping."[cite: 23]
+            return "Product requires physical shipping."
     
     def calculate_shipping_cost(self):
-        return self.weight*5.0
+        return self._weight*5.0
     
     def display_information(self):
-        super().display_information(self)
-        print(f"| Weight: {self.weight}kg | Fulfillment: {self.get_fulfilment_info()}")
+        super().display_information()
+        print(f"| Weight: {self._weight}kg | Fulfillment: {self.get_fulfilment_info()}")
     
     def to_dict(self):
         return {
@@ -92,16 +92,16 @@ class PhysicalProduct:
             "name": self.name,
             "price": self._price,
             "stock": self._stock,
-            "weight": self.weight
+            "weight": self._weight
         }
     
-class DigitalProduct:
+class DigitalProduct(Product):
     def __init__(self, product_id, name, price, stock, download_size):
         super().__init__(product_id, name, price, stock)
         self.download_size = download_size
     
     def get_fulfilment_info(self):
-        return "Product requires physical shipping."[cite: 23]
+        return "Product requires physical shipping."
     
     def display_information(self):
         super().display_information(self)
