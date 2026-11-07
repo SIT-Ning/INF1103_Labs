@@ -1,133 +1,50 @@
+from product_updated import Product
+from physical import PhysicalProduct
+from digital import DigitalProduct
 import json
-import os
-
-#Define load_inventory()
-def load_inventory(filename = 'inventory.json'):
-    if os.path.exists(filename):
+from supply import Supplier
+class Inventory:
+    def __init__(self) -> None:
+        self.products = []
+    
+    def add_product(self, product: Product) -> None:
+        self.products.append(product)
+        
+    def find_product(self, product_id: str) -> Product | None:
+        for product in self.products:
+            if product.product_id == product_id:
+                return product
+        return None
+    
+    def display_all(self) -> None:
+        if not self.products:
+            print('Inventory is empty')
+        for product in self.products:
+            product.display_information()
+    
+    def save_to_json(self, filename: str = "inventory.json") -> None:
+        data = [product.to_dict() for product in self.products]
+        with open(filename, "w") as file:
+            json.dump(data, file, indent=4)
+        print(f"Inventory saved successfully to {filename}")
+    
+    def load_from_json(self, filename: str = "inventory.json") -> None:
         try:
-            with open(filename,"r") as file:
-                records = json.load(file)
-            print("Inventory loaded successfully.")
-        except json.JSONDecodeError:
-            records = {}
-        return records
-    else:
-        with open(filename,"w") as file:
-            json.dump({}, file)
-        return {}
-
-#Define save_inventory()
-def save_inventory(new_entry, filename = "inventory.json"):
-    with open(filename,"w") as file:
-        json.dump(new_entry, file, indent=4)
-    print("\nSaving inventory...\n Inventory saved successfully to inventory.json")
-
-#Define add_product()
-def add_product(inventory):
-    inventory = load_inventory()
-    print("Add New Product\n")
-    prd_id = input("Product ID: ")
-    if prd_id in inventory:
-        print (f"Error: Product Id: {prd_id} already exists")
-        return
-    prd_name = input("Product Name: ")
-    price = float(input("Price: $"))
-    stock = int(input("Stock quantity: "))
-
-    inventory[prd_id] = {
-        "name":prd_name,
-        "price":price,
-        "stock":stock
-    }
-
-    saving = save_inventory(inventory)
-    print("Product added successfully!")
-    return saving
-
-#Define update_stock()
-def update_stock(inventory):
-    print("Update stock")
-    prd_id = input("Enter Product ID: ")
-    inventory = load_inventory()
-    if prd_id in inventory:
-        product = inventory[prd_id]
-        print("Product Found")
-        print(f"Name: {product["name"]}")
-        print(f"Current Stock: {product["stock"]}\n")
-
-        new_stock = int(input("New stock quantity: "))
-        inventory[prd_id]["stock"] = new_stock
-
-        save_inventory(inventory)
-        print("\nStock update successfully")
-    else:
-        print("\nProduct not found")
-
-#Define search_product()
-def search_product(inventory):
-    print("Search product")
-    prd_id = input("Enter Product ID: ")
-    inventory = load_inventory()
-    if prd_id in inventory:
-        product = inventory[prd_id]
-        print("\nProduct Found")
-        print("---------------------------------")
-        print(f"ID: {prd_id}")
-        print(f"Name: {product["name"]}")
-        print(f"Price: {product["price"]}")
-        print(f"Stock: {product["stock"]}")
-        print("---------------------------------")
-    else:
-        print('Product Not Found')
-
-#Define display_all()
-def display_all(inventory):
-    inventory = load_inventory()
-    print("Current Inventory")
-    print("---------------------------------")
-    for prd_id, details in inventory.items():
-        name = details.get("name","")
-        price = float(details.get("price",0.0))
-        stock = int(details.get("stock",0))
-
-        print(f"ID:{prd_id} | Name:{name} | Price:${price:.2f} | Stock:{stock}")
-    print("---------------------------------")
-
-def main():
-    print("================================================")
-    print("INVENTORY MANAGEMENT SYSTEM")
-    print("================================================")
-    print("inventory.json found!")
-    inventory = load_inventory()
-    while True:
-        print("\n--------------MENU-------------")
-        print("1. Display All Products")
-        print("2. Add Product")
-        print("3. Update Stock")
-        print("4. Search Product")
-        print("5. Save Inventory")
-        print("6. Exit")
-        print("---------------------------------")
-
-        choice = input("Enter option: ")
-
-        if choice == "1":
-            display_all(inventory)
-        elif choice == "2":
-            add_product(inventory)
-        elif choice == "3":
-            update_stock(inventory)
-        elif choice == "4":
-            search_product(inventory)
-        elif choice == "5":
-            save_inventory(inventory)
-        elif choice == "6":
-            save_inventory(inventory)
-            print("Thank you for using Inventory Management System.\nProgram Terminated.")
-            break
-        else:
-            print("Enter a number between 1 and 6")
-
-main()
-
-
+            with open(filename, "r") as file:
+                data = json.load(file)
+                self.products = []
+                for item in data:
+                    s = item["supplier"]
+                    supplier = Supplier(s["supplier_id"], s["name"], s["contact_email"])
+                    
+                    if item["type"] == "physical":
+                        prod = PhysicalProduct(item["product_id"], item["name"], item["price"], item["stock"], item["weight"], supplier)
+                    elif item["type"] == "digital":
+                        prod = DigitalProduct(item["product_id"], item["name"], item["price"], item["stock"], item["download size"], supplier)
+                    else:
+                        continue
+                    self.products.append(prod)
+                print("inventory.json found")
+                print(f"Inventory is loaded successfully from {filename}")
+        except FileNotFoundError:
+            print(f"{filename} is not found. Starting with an empty inventory")
