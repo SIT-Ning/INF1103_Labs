@@ -8,11 +8,17 @@ class Product(ABC):
         self._price = price
         self._stock = stock
         self.supplier: Supplier = supplier
+        
+    @property
+    def product_id(self) -> str:
+        return self._product_id
+        
     
     def update_stock(self, quantity: int) -> None:
         self._stock += quantity
         if self._stock < 0: # type: ignore
             self._stock = 0
+            
     @abstractmethod
     def get_fulfilment_info(self) -> str:
         """Must be implemented by subclasses"""
@@ -24,3 +30,4 @@ class Product(ABC):
     @abstractmethod    
     def to_dict(self) -> dict:
         pass
+    
