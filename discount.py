@@ -5,7 +5,7 @@ class DiscountStrategy(ABC):
     def apply(self, total: float) -> float:
         pass
     
-class NoDiscount(ABC):
+class NoDiscount(DiscountStrategy):
     def apply(self, total: float) -> float:
         return total
     
